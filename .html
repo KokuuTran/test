@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Kiểm Tra Địa Lí 12 - 50 Câu Trắc Nghiệm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .option-label { transition: all 0.2s ease; }
+        .option-input:checked + .option-label {
+            background-color: #dcfce7;
+            border-color: #22c55e;
+        }
+        .correct { color: #16a34a; font-weight: bold; }
+        .wrong { color: #dc2626; text-decoration: line-through; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed">
+
+    <div class="max-w-4xl mx-auto p-4 md:p-8">
+        <header class="text-center mb-10">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">BÀI KIỂM TRA ĐỊA LÍ 12</h1>
+            <p class="text-gray-600 italic">Tìm hiểu đặc điểm kinh tế - xã hội các vùng kinh tế Việt Nam</p>
+            <div id="score-summary" class="hidden mt-6 p-4 bg-blue-100 rounded-lg border border-blue-200">
+                <p class="text-xl font-semibold text-blue-900">Kết quả: <span id="final-score">0</span>/50 câu đúng</p>
+                <button onclick="window.location.reload()" class="mt-2 text-blue-600 underline">Làm lại bài</button>
+            </div>
+        </header>
+
+        <form id="quiz-form" class="space-y-8">
+            <!-- Câu hỏi sẽ được chèn vào đây bởi JS -->
+        </form>
+
+        <div class="mt-12 sticky bottom-4 flex justify-center">
+            <button type="button" id="submit-btn" onclick="checkAnswers()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition active:scale-95">
+                Nộp bài và Xem kết quả
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "Loại đất chủ yếu ở dải đồng bằng ven biển Bắc Trung Bộ là", a: "Cát pha", o: ["Đất phèn", "Đất xám", "Cát pha", "Đất mặn"] },
+            { q: "Vấn đề có ý nghĩa hàng đầu đối với việc khai thác thế mạnh ở vùng Bắc Trung Bộ là", a: "Phát triển ngành nông, lâm, thủy sản", o: ["Chuyển sang các công nghiệp lâu năm", "Trồng cây lương thực và cây thực phẩm", "Phát triển ngành nuôi trồng thuỷ sản", "Phát triển ngành nông, lâm, thủy sản"] },
+            { q: "Bắc Trung Bộ không tiếp giáp với vùng kinh tế nào sau đây?", a: "Đông Nam Bộ", o: ["Trung du miền núi phía Bắc", "Đồng bằng sông Hồng", "Đông Nam Bộ", "Nam Trung Bộ"] },
+            { q: "Khu vực đồi núi của Bắc Trung Bộ có thế mạnh trong việc", a: "Trồng cây công nghiệp lâu năm, cây ăn quả, chăn nuôi gia súc lớn và trồng rừng", o: ["Trồng cây công nghiệp hàng năm, cây dược liệu, trồng rừng và chăn nuôi lớn", "Trồng cây công nghiệp lâu năm, cây ăn quả, chăn nuôi gia súc lớn và trồng rừng", "Trồng rừng, trồng rau quả cận nhiệt và chăn nuôi gia súc nhỏ", "Trồng cây công nghiệp, cây rau đậu và chăn nuôi lớn"] },
+            { q: "Đặc khu (Huyện đảo) nào sau đây thuộc Nam Trung Bộ?", a: "Phú Quý", o: ["Côn Đô", "Côn Đào", "Phú Quý", "Cổ Tô"] },
+            { q: "Điều kiện sinh thái nông nghiệp nào sau đây không phải của Bắc Trung Bộ?", a: "Nhiều sông lớn, đồng bằng rộng", o: ["Nhiều sông lớn, đồng bằng rộng", "Đồng bằng hẹp, vùng đồi trước núi", "Đất phù sa, đất feralit và đất badan", "Thường xảy ra thiên tai, nạn cát bay"] },
+            { q: "Thế mạnh để Bắc Trung Bộ phát triển khai thác hải sản là", a: "Vùng biển rộng, giàu nguồn lợi", o: ["Có mật độ sông ngòi khá cao", "Có một số nguồn nước khoáng", "Rừng tự nhiên có diện tích lớn", "Vùng biển rộng, giàu nguồn lợi"] },
+            { q: "Thế mạnh để Bắc Trung Bộ phát triển nuôi trồng thuỷ hải sản là", a: "Bờ biển khúc khuỷu có đầm phá", o: ["Bờ biển khúc khuỷu có đầm phá", "Có một số nguồn nước khoáng", "Rừng tự nhiên có diện tích lớn", "Vùng biển rộng có nhiều bãi cá"] },
+            { q: "Chuyên môn hóa sản xuất cây công nghiệp lâu năm ở Bắc Trung Bộ chủ yếu dựa vào điều kiện thuận lợi nào sau đây?", a: "Đất badan màu mỡ ở vùng đồi trước núi", o: ["Đất badan màu mỡ ở vùng đồi trước núi", "Đất cát pha ở các đồng bằng ven biển", "Dân có kinh nghiệm chinh phục tự nhiên", "Có một số cơ sở công nghiệp chế biến"] },
+            { q: "Vai trò quan trọng của rừng đặc dụng ở Bắc Trung Bộ là", a: "Bảo tồn các loài sinh vật quý hiếm", o: ["Ngăn chặn nạn cát bay và cát chảy", "Cung cấp nhiều lâm sản có giá trị", "Hạn chế tác hại các cơn lũ đột ngột", "Bảo tồn các loài sinh vật quý hiếm"] },
+            { q: "Trong tương lai, cảng biển nào sau đây ở Nam Trung Bộ sẽ là cảng trung chuyển quốc tế lớn nhất cả nước?", a: "Vân Phong", o: ["Đà Nẵng", "Dung Quất", "Quy Nhơn", "Vân Phong"] },
+            { q: "Đông Nam Bộ dẫn đầu cả nước về diện tích gieo trồng cây công nghiệp nào sau đây?", a: "Cao su", o: ["Cao su", "Cà phê", "Dừa", "Chè"] },
+            { q: "Công trình thủy lợi Dầu Tiếng thuộc tỉnh nào sau đây?", a: "Tây Ninh", o: ["Bình Dương", "Bình Phước", "Tây Ninh", "Đồng Nai"] },
+            { q: "Nhà máy thủy điện nào sau đây có công suất lớn nhất Đông Nam Bộ?", a: "Trị An", o: ["Thác Mơ", "Cần Đơn", "Trị An", "Bà Rịa"] },
+            { q: "Vùng Đông Nam Bộ hiện nay có bao nhiêu tỉnh/thành phố?", a: "6", o: ["5", "6", "10", "13"] }, // Đã sửa lại kiến thức chuẩn
+            { q: "Nhân tố nào là quan trọng nhất giúp Đông Nam Bộ có vị trí hàng đầu trong sự phát triển kinh tế của nước ta?", a: "Vị trí địa lí thuận lợi", o: ["Có khí hậu ôn hòa nhất", "Vị trí địa lí thuận lợi", "Nhiều khoáng sản kim loại", "Dân số ít nhất cả nước"] },
+            { q: "Phát biểu nào sau đây không đúng với sản xuất cây ăn quả ở Đông Nam Bộ?", a: "Có diện tích cây ăn quả lớn, chủ yếu là các cây cận nhiệt đới", o: ["Là một trong những vùng trồng cây ăn quả lớn của nước", "Có diện tích cây ăn quả lớn, chủ yếu là các cây cận nhiệt đới", "Đưa khoa học - công nghệ vào sản xuất", "Tăng trưởng với những giống mới có năng suất cao"] },
+            { q: "Hạn chế lớn nhất về tự nhiên để phát triển nông nghiệp ở đồng bằng sông Cửu Long là", a: "Diện tích đất phèn, đất mặn lớn", o: ["Ngập lụt, triều cường diện rộng", "Tài nguyên rừng đang suy giảm", "Diện tích đất phèn, đất mặn lớn", "Tài nguyên khoáng sản hạn chế"] },
+            { q: "Khu vực nào sau đây ở Đồng bằng sông Cửu Long tập trung nhiều than bùn nhất?", a: "U Minh", o: ["Kiên Giang", "Đồng Tháp Mười", "Tứ giác Long Xuyên", "U Minh"] },
+            { q: "Loại đất có diện tích lớn nhất ở Đồng bằng sông Cửu Long là", a: "Đất phù sa", o: ["Đất nông nghiệp", "Đất lâm nghiệp", "Đất phù sa", "Đất ở"] }, // Sửa để chính xác về phân loại đất
+            { q: "Vấn đề cần đặc biệt chú ý trong việc phát triển thủy sản của vùng Bắc Trung Bộ là", a: "Khai thác hợp lí và bảo vệ nguồn lợi thủy sản", o: ["Giảm việc khai thác để duy trì trữ lượng", "Khai thác hợp lí và bảo vệ nguồn lợi thủy sản", "Hạn chế việc nuôi trồng để bảo vệ môi trường", "Năng lượng và chất thải không đạt chuẩn"] },
+            { q: "Phát biểu nào sau đây đúng với Đồng bằng sông Cửu Long?", a: "Mùa lũ bị ngập trên diện rộng", o: ["Mùa lũ bị ngập trên diện rộng", "Có hệ thống đê điều chằng chịt", "Đất phèn, đất mặn không nhiều", "Hầu hết là các khu địa hình cao"] },
+            { q: "Đặc điểm nào sau đây đúng với vị trí địa lí và phạm vi lãnh thổ của vùng Đông Nam Bộ?", a: "Quần đảo Côn Sơn là bộ phận lãnh thổ của vùng Đông Nam Bộ", o: ["Tất cả các tỉnh đều có biên giới", "Lãnh thổ hẹp chiều Đông - Tây", "Phía tây tiếp giáp với Lào", "Quần đảo Côn Sơn là bộ phận lãnh thổ của vùng Đông Nam Bộ"] },
+            { q: "Vùng Đông Nam Bộ có khả năng phát triển mạnh các ngành kinh tế có trình độ KH-KT cao là do", a: "Nguồn lao động có trình độ và chuyên môn đào tạo chiếm tỉ lệ cao", o: ["Nguồn lao động có trình độ và chuyên môn đào tạo chiếm tỉ lệ cao", "Vị trí địa lí thuận lợi", "Tài nguyên thiên nhiên phong phú", "Chủ trương đa dạng hoá sản phẩm"] },
+            { q: "Đồng bằng sông Cửu Long có", a: "Hệ thống sông, kênh rạch dày đặc", o: ["Rất nhiều mỏ dầu tại thềm lục địa", "Nguồn dự trữ thuỷ năng dồi dào", "Hệ thống sông, kênh rạch dày đặc", "Bờ biển dài, nhiều vịnh nước sâu"] },
+            { q: "Hạn chế về tự nhiên ở Đồng bằng sông Cửu Long là", a: "Mùa khô xảy ra trong nhiều tháng", o: ["Rừng ngập mặn diện tích rộng", "Mùa khô xảy ra trong nhiều tháng", "Khí hậu có tính chất cận Xích đạo", "Có nhiều ô trũng lớn"] },
+            { q: "Đồng bằng sông Cửu Long ít xảy ra thiên tai nào sau đây?", a: "Bão", o: ["Hạn hán", "Bão", "Lũ lụt", "Nhiễm mặn"] },
+            { q: "Khí hậu vùng Đồng bằng sông Cửu Long thể hiện rõ nét tính chất", a: "Cận xích đạo", o: ["Ôn đới", "Nhiệt đới", "Cận nhiệt đới", "Cận xích đạo"] },
+            { q: "Điều kiện tự nhiên nào sau đây không thuận lợi cho Đồng bằng sông Cửu Long trồng lúa?", a: "Diện tích đất phèn và đất mặn lớn", o: ["Sông ngòi dày đặc", "Diện tích đất phèn và đất mặn lớn", "Tiềm năng lớn về đất phù sa ngọt", "Khí hậu nhiệt đới nóng quanh năm"] },
+            { q: "Ngành khai thác thuỷ hải sản phát triển mạnh ở vùng Đồng bằng sông Cửu Long vì có", a: "Ba mặt giáp biển, ngư trường lớn", o: ["Ba mặt giáp biển, ngư trường lớn", "Nhiều vùng trũng ngập nước", "Nhiều bãi triều", "Mạng lưới sông ngòi dày đặc"] },
+            { q: "Phát biểu nào sau đây không đúng về tài nguyên sinh vật ở Đồng bằng sông Cửu Long?", a: "Rừng có nhiều ý nghĩa về nông nghiệp", o: ["Tài nguyên sinh vật phong phú", "Rừng có nhiều ý nghĩa về nông nghiệp", "Rừng tràm, rừng ngập mặn chủ yếu", "Có nhiều loài chim và cá"] },
+            { q: "Thuận lợi để phát triển đánh bắt hải sản ở Đồng bằng sông Cửu Long là", a: "Vùng biển rộng, nhiều bãi tôm, bãi cá lớn", o: ["Vùng biển rộng, nhiều bãi tôm, bãi cá lớn", "Có nhiều đảo, quần đảo", "Hệ thống kênh rạch chằng chịt", "Nền nhiệt quanh năm cao"] },
+            { q: "Khó khăn chủ yếu về tự nhiên của đồng bằng sông Cửu Long là", a: "Xâm nhập mặn vào sâu trong đất liền", o: ["Xâm nhập mặn vào sâu trong đất liền", "Bão và áp thấp nhiệt đới", "Cát bay, cát chảy", "Đất bị bạc màu"] },
+            { q: "Công trình thủy lợi Dầu Tiếng được xây dựng trên sông nào sau đây?", a: "Sài Gòn", o: ["Đồng Nai", "Sài Gòn", "Bé", "La Ngà"] },
+            { q: "Nhà máy thuỷ điện Trị An được xây dựng trên sông nào sau đây?", a: "Đồng Nai", o: ["Đồng Nai", "Sài Gòn", "Bé", "Sê San"] },
+            { q: "Rừng ven biển ở Bắc Trung Bộ có tác dụng chủ yếu là", a: "Chắn gió, bão; ngăn cát bay, cát chảy", o: ["Chắn gió, bão; ngăn cát bay, cát chảy", "Điều hoà nguồn nước", "Chống lũ đột ngột", "Tạo cảnh quan ven biển"] },
+            { q: "Để tạo thế liên hoàn trong phát triển kinh tế ở Bắc Trung Bộ, biện pháp quan trọng nhất là", a: "Phát triển cơ sở hạ tầng giao thông vận tải", o: ["Phát triển cơ sở hạ tầng giao thông vận tải", "Phát triển kinh tế ở vùng phía tây", "Hình thành các trung tâm công nghiệp", "Gắn sản xuất với chế biến"] },
+            { q: "Nam Trung Bộ có tiềm năng lớn để phát triển", a: "Điện gió và điện mặt trời", o: ["Điện gió và điện mặt trời", "Điện sinh khối và điện gió", "Điện nhiệt và điện sinh khối", "Điện mặt trời và địa nhiệt"] },
+            { q: "Dầu khí của Đông Nam Bộ là nguyên liệu cho", a: "Sản xuất đạm", o: ["Sản xuất giấy", "Luyện kim màu", "Luyện kim đen", "Sản xuất đạm"] },
+            { q: "Ngành công nghiệp mũi nhọn và quan trọng của Đông Nam Bộ hiện nay là", a: "Khai thác, chế biến dầu khí", o: ["Dệt may", "Sản xuất điện tử", "Sản xuất thực phẩm", "Khai thác, chế biến dầu khí"] },
+            { q: "Dầu khí của Đông Nam Bộ cung cấp nhiên liệu chủ yếu cho các nhà máy", a: "Nhiệt điện", o: ["Thủy điện", "Nhiệt điện", "Phong điện", "Điện hạt nhân"] },
+            { q: "Nhà máy thủy điện nào sau đây không thuộc vùng Trung du và miền núi phía Bắc?", a: "Trị An", o: ["Lai Châu", "Thác Bà", "Trị An", "Sơn La"] },
+            { q: "Tiềm năng lớn của Nam Trung Bộ về năng lượng tái tạo là", a: "Điện gió và mặt trời", o: ["Điện gió và mặt trời", "Điện sinh khối", "Sức nước", "Than đá"] },
+            { q: "Trữ lượng than đá lớn là điều kiện quan trọng để Đồng bằng sông Hồng phát triển", a: "Sản xuất điện", o: ["Luyện kim đen", "Sản xuất xi măng", "Vật liệu xây dựng", "Sản xuất điện"] },
+            { q: "Bắc Trung Bộ không tiếp giáp với", a: "Tây Nguyên", o: ["Đồng bằng sông Hồng", "Lào", "Tây Nguyên", "Biển Đông"] }, // Sửa câu 45 cho đa dạng
+            { q: "Thuận lợi chủ yếu để Nam Trung Bộ phát triển dịch vụ hàng hải là", a: "Nằm gần tuyến đường biển quốc tế", o: ["Vùng biển rộng ít thiên tai", "Nằm gần tuyến đường biển quốc tế", "Nền kinh tế phát triển nhất", "Nhiệt độ nóng quanh năm"] },
+            { q: "Khai thác dầu khí ở Đông Nam Bộ diễn ra chủ yếu ở", a: "Thềm lục địa", o: ["Ven biển", "Vùng núi", "Thềm lục địa", "Hải đảo"] },
+            { q: "Hướng chủ yếu phát triển nuôi trồng thuỷ sản ở Đồng bằng sông Cửu Long là", a: "Đẩy mạnh chế biến, tăng cường xuất khẩu", o: ["Đẩy mạnh chế biến, tăng cường xuất khẩu", "Ứng dụng kĩ thuật mới", "Mở rộng diện tích", "Nâng cao sản lượng"] },
+            { q: "Nuôi trồng thủy sản ở ĐBSCL phát triển theo hướng tập trung do tác động của", a: "Chuyển dịch cơ cấu nông nghiệp, nhu cầu lớn của thị trường", o: ["Chuyển dịch cơ cấu nông nghiệp, nhu cầu lớn của thị trường", "Khai thác hiệu quả thế mạnh", "Đa dạng hóa kinh tế", "Ứng phó biến đổi khí hậu"] },
+            { q: "Thuận lợi chủ yếu để phát triển cây cà phê ở Nam Trung Bộ là", a: "Đất đai màu mỡ, khí hậu có tính cận xích đạo", o: ["Nguồn nước phong phú", "Đất đai màu mỡ, khí hậu có tính cận xích đạo", "Có nhiều cao nguyên", "Khí hậu phân hóa theo độ cao"] }
+        ];
+
+        const form = document.getElementById('quiz-form');
+
+        function renderQuiz() {
+            questions.forEach((item, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "bg-white p-6 rounded-xl shadow-sm border border-gray-100";
+                
+                let optionsHtml = '';
+                item.o.forEach((opt, oIdx) => {
+                    const id = `q${index}_o${oIdx}`;
+                    optionsHtml += `
+                        <div class="mt-3">
+                            <input type="radio" name="question${index}" value="${opt}" id="${id}" class="option-input hidden">
+                            <label for="${id}" class="option-label block p-3 border rounded-lg cursor-pointer hover:bg-gray-50 border-gray-200">
+                                <span class="font-semibold mr-2">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
+                            </label>
+                        </div>
+                    `;
+                });
+
+                qDiv.innerHTML = `
+                    <p class="text-lg font-bold text-gray-700 mb-2">Câu ${index + 1}: ${item.q}</p>
+                    <div class="options-container">${optionsHtml}</div>
+                    <div id="feedback-${index}" class="mt-3 hidden italic text-sm"></div>
+                `;
+                form.appendChild(qDiv);
+            });
+        }
+
+        function checkAnswers() {
+            let score = 0;
+            questions.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="question${index}"]:checked`);
+                const feedback = document.getElementById(`feedback-${index}`);
+                feedback.classList.remove('hidden');
+                
+                const labels = document.querySelectorAll(`input[name="question${index}"] + label`);
+                
+                // Reset styles
+                labels.forEach(label => {
+                    label.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+                });
+
+                if (selected) {
+                    if (selected.value === item.a) {
+                        score++;
+                        feedback.innerHTML = `<span class="text-green-600">Chính xác!</span>`;
+                    } else {
+                        feedback.innerHTML = `<span class="text-red-600">Chưa đúng. Đáp án là: ${item.a}</span>`;
+                    }
+                } else {
+                    feedback.innerHTML = `<span class="text-orange-600">Bạn chưa chọn câu trả lời này. Đáp án là: ${item.a}</span>`;
+                }
+
+                // Highlight correct answer
+                labels.forEach(label => {
+                    if (label.innerText.includes(item.a)) {
+                        label.classList.add('bg-green-100', 'border-green-500');
+                    }
+                });
+            });
+
+            document.getElementById('score-summary').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('submit-btn').innerText = "Cập nhật kết quả";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onload = renderQuiz;
+    </script>
+</body>
+</html>
