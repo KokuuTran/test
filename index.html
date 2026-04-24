@@ -1,45 +1,400 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài Kiểm Tra Địa Lí 12 - 50 Câu Trắc Nghiệm</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Bài Kiểm Tra Địa Lí 12</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <style>
-        .option-label { transition: all 0.2s ease; }
-        .option-input:checked + .option-label {
-            background-color: #dcfce7;
-            border-color: #22c55e;
+        :root {
+            --bg: #f5f0e8;
+            --surface: #fffdf8;
+            --surface2: #f0ebe0;
+            --border: #d4c9b0;
+            --text: #2c2416;
+            --text-muted: #7a6e5c;
+            --accent: #1a5c8a;
+            --accent2: #b5401e;
+            --green: #1a6b3c;
+            --green-bg: #e8f5ed;
+            --green-border: #6bbf8a;
+            --red: #b5401e;
+            --red-bg: #faeae6;
+            --red-border: #e08060;
+            --orange: #b56010;
+            --orange-bg: #fef3e2;
+            --orange-border: #e0a060;
         }
-        .correct { color: #16a34a; font-weight: bold; }
-        .wrong { color: #dc2626; text-decoration: line-through; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Source Sans 3', sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Decorative header */
+        .page-header {
+            background: var(--accent);
+            color: white;
+            padding: 2.5rem 1.5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(255, 255, 255, 0.04) 20px,
+                    rgba(255, 255, 255, 0.04) 40px);
+        }
+
+        .page-header h1 {
+            font-family: 'Merriweather', serif;
+            font-size: clamp(1.4rem, 4vw, 2rem);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            position: relative;
+        }
+
+        .page-header p {
+            margin-top: 0.5rem;
+            opacity: 0.8;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 2rem 1rem 6rem;
+        }
+
+        /* Section heading */
+        .section-title {
+            font-family: 'Merriweather', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent);
+            padding: 0.6rem 1rem;
+            background: var(--surface);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 6px 6px 0;
+            margin: 2.5rem 0 1.2rem;
+            letter-spacing: 0.01em;
+        }
+
+        /* Score summary */
+        #score-summary {
+            background: var(--surface);
+            border: 2px solid var(--accent);
+            border-radius: 10px;
+            padding: 1.2rem 1.5rem;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        #score-summary p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        #score-summary .reload-btn {
+            display: inline-block;
+            margin-top: 0.6rem;
+            color: var(--accent2);
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        /* Question card */
+        .q-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.3rem 1.4rem 1.1rem;
+            margin-bottom: 1rem;
+            transition: box-shadow 0.2s;
+        }
+
+        .q-card:hover {
+            box-shadow: 0 2px 12px rgba(26, 92, 138, 0.08);
+        }
+
+        .q-text {
+            font-family: 'Merriweather', serif;
+            font-size: 0.97rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .q-num {
+            color: var(--accent);
+            margin-right: 0.3rem;
+        }
+
+        /* Radio options (multiple choice) */
+        .option-wrap {
+            margin-top: 0.45rem;
+        }
+
+        .option-input {
+            display: none;
+        }
+
+        .option-label {
+            display: block;
+            padding: 0.55rem 0.9rem;
+            border: 1.5px solid var(--border);
+            border-radius: 7px;
+            cursor: pointer;
+            transition: all 0.18s;
+            font-size: 0.95rem;
+            background: var(--bg);
+        }
+
+        .option-label:hover {
+            border-color: var(--accent);
+            background: #eaf2f9;
+        }
+
+        .option-input:checked+.option-label {
+            background: #daeaf6;
+            border-color: var(--accent);
+        }
+
+        .option-label.correct-ans {
+            background: var(--green-bg) !important;
+            border-color: var(--green-border) !important;
+            color: var(--green);
+        }
+
+        .option-label.wrong-ans {
+            background: var(--red-bg) !important;
+            border-color: var(--red-border) !important;
+            color: var(--red);
+            text-decoration: line-through;
+        }
+
+        /* True/False options */
+        .tf-options {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 0.45rem;
+            flex-wrap: wrap;
+        }
+
+        .tf-input {
+            display: none;
+        }
+
+        .tf-label {
+            padding: 0.45rem 1.2rem;
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.18s;
+            background: var(--bg);
+        }
+
+        .tf-label:hover {
+            border-color: var(--accent);
+            background: #eaf2f9;
+        }
+
+        .tf-input:checked+.tf-label {
+            background: #daeaf6;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .tf-label.correct-ans {
+            background: var(--green-bg) !important;
+            border-color: var(--green-border) !important;
+            color: var(--green) !important;
+        }
+
+        .tf-label.wrong-ans {
+            background: var(--red-bg) !important;
+            border-color: var(--red-border) !important;
+            color: var(--red) !important;
+        }
+
+        /* Sub-items for true/false questions */
+        .sub-item {
+            border-left: 3px solid var(--border);
+            padding: 0.6rem 0.9rem 0.6rem 1rem;
+            margin: 0.6rem 0;
+            border-radius: 0 6px 6px 0;
+            background: var(--surface2);
+        }
+
+        .sub-item-text {
+            font-size: 0.93rem;
+            margin-bottom: 0.4rem;
+            font-style: italic;
+            color: var(--text);
+        }
+
+        /* Table in question */
+        .q-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0.7rem 0 0.9rem;
+            font-size: 0.88rem;
+        }
+
+        .q-table th {
+            background: var(--accent);
+            color: white;
+            padding: 0.4rem 0.6rem;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .q-table td {
+            border: 1px solid var(--border);
+            padding: 0.35rem 0.6rem;
+            text-align: center;
+        }
+
+        .q-table tr:nth-child(even) td {
+            background: var(--surface2);
+        }
+
+        .q-table td:first-child {
+            text-align: left;
+            font-weight: 600;
+        }
+
+        /* Feedback */
+        .feedback {
+            margin-top: 0.7rem;
+            font-size: 0.88rem;
+            font-style: italic;
+            padding: 0.4rem 0.7rem;
+            border-radius: 5px;
+        }
+
+        .feedback.correct {
+            background: var(--green-bg);
+            color: var(--green);
+            border-left: 3px solid var(--green-border);
+        }
+
+        .feedback.wrong {
+            background: var(--red-bg);
+            color: var(--red);
+            border-left: 3px solid var(--red-border);
+        }
+
+        .feedback.skipped {
+            background: var(--orange-bg);
+            color: var(--orange);
+            border-left: 3px solid var(--orange-border);
+        }
+
+        /* Submit button */
+        .sticky-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, var(--bg) 70%, transparent);
+            padding: 1.2rem;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        #submit-btn {
+            pointer-events: all;
+            background: var(--accent2);
+            color: white;
+            font-family: 'Source Sans 3', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            border-radius: 30px;
+            padding: 0.8rem 2.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(181, 64, 30, 0.35);
+            transition: all 0.2s;
+            letter-spacing: 0.03em;
+        }
+
+        #submit-btn:hover {
+            background: #8f2e10;
+            transform: translateY(-1px);
+        }
+
+        #submit-btn:active {
+            transform: scale(0.97);
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans leading-relaxed">
 
-    <div class="max-w-4xl mx-auto p-4 md:p-8">
-        <header class="text-center mb-10">
-            <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">BÀI KIỂM TRA ĐỊA LÍ 12</h1>
-            <p class="text-gray-600 italic">Tìm hiểu đặc điểm kinh tế - xã hội các vùng kinh tế Việt Nam</p>
-            <div id="score-summary" class="hidden mt-6 p-4 bg-blue-100 rounded-lg border border-blue-200">
-                <p class="text-xl font-semibold text-blue-900">Kết quả: <span id="final-score">0</span>/50 câu đúng</p>
-                <button onclick="window.location.reload()" class="mt-2 text-blue-600 underline">Làm lại bài</button>
-            </div>
-        </header>
+<body>
 
-        <form id="quiz-form" class="space-y-8">
-            <!-- Câu hỏi sẽ được chèn vào đây bởi JS -->
-        </form>
+    <div class="page-header">
+        <h1>BÀI KIỂM TRA ĐỊA LÍ 12</h1>
+        <p>Đặc điểm kinh tế – xã hội các vùng kinh tế Việt Nam</p>
+    </div>
 
-        <div class="mt-12 sticky bottom-4 flex justify-center">
-            <button type="button" id="submit-btn" onclick="checkAnswers()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition active:scale-95">
-                Nộp bài và Xem kết quả
-            </button>
+    <div class="container">
+
+        <div id="score-summary" style="display:none">
+            <p>Kết quả: <span id="final-score-mc">0</span>/50 câu trắc nghiệm đúng &nbsp;|&nbsp; <span
+                    id="final-score-tf">0</span>/40 ý đúng/sai &nbsp;|&nbsp; <span id="final-score-short">0</span>/10
+                câu trả lời ngắn đúng</p>
+            <button class="reload-btn" onclick="window.location.reload()">↺ Làm lại bài</button>
         </div>
+
+        <!-- PHẦN 1: TRẮC NGHIỆM -->
+        <div class="section-title">PHẦN I — TRẮC NGHIỆM (50 câu)</div>
+        <form id="mc-form" class="space"></form>
+
+        <!-- PHẦN 2: ĐÚNG SAI -->
+        <div class="section-title">PHẦN II — ĐÚNG / SAI (10 câu × 4 ý)</div>
+        <form id="tf-form" class="space"></form>
+
+        <!-- PHẦN 3: TRẢ LỜI NGẮN -->
+        <div class="section-title">PHẦN III — TRẢ LỜI NGẮN (10 câu)</div>
+        <form id="short-form"></form>
+
+    </div>
+
+    <div class="sticky-bar">
+        <button id="submit-btn" onclick="checkAll()">Nộp bài &amp; Xem kết quả</button>
     </div>
 
     <script>
-        const questions = [
+        // ===================== DỮ LIỆU TRẮC NGHIỆM =====================
+        const mcQuestions = [
             { q: "Loại đất chủ yếu ở dải đồng bằng ven biển Bắc Trung Bộ là", a: "Cát pha", o: ["Đất phèn", "Đất xám", "Cát pha", "Đất mặn"] },
             { q: "Vấn đề có ý nghĩa hàng đầu đối với việc khai thác thế mạnh ở vùng Bắc Trung Bộ là", a: "Phát triển ngành nông, lâm, thủy sản", o: ["Chuyển sang các công nghiệp lâu năm", "Trồng cây lương thực và cây thực phẩm", "Phát triển ngành nuôi trồng thuỷ sản", "Phát triển ngành nông, lâm, thủy sản"] },
             { q: "Bắc Trung Bộ không tiếp giáp với vùng kinh tế nào sau đây?", a: "Đông Nam Bộ", o: ["Trung du miền núi phía Bắc", "Đồng bằng sông Hồng", "Đông Nam Bộ", "Nam Trung Bộ"] },
@@ -76,7 +431,7 @@
             { q: "Công trình thủy lợi Dầu Tiếng được xây dựng trên sông nào sau đây?", a: "Sài Gòn", o: ["Đồng Nai", "Sài Gòn", "Bé", "La Ngà"] },
             { q: "Nhà máy thuỷ điện Trị An được xây dựng trên sông nào sau đây?", a: "Đồng Nai", o: ["Đồng Nai", "Sài Gòn", "Bé", "Sê San"] },
             { q: "Rừng ven biển ở Bắc Trung Bộ có tác dụng chủ yếu là", a: "Chắn gió, bão; ngăn cát bay, cát chảy", o: ["Chắn gió, bão; ngăn cát bay, cát chảy", "Điều hoà nguồn nước", "Chống lũ đột ngột", "Tạo cảnh quan ven biển"] },
-            { q: "Để tạo thế liên hoàn trong phát triển kinh tế ở Bắc Trung Bộ, biện pháp quan trọng nhất là", a: "Phát triển cơ sở hạ tầng giao thông vận tải", o: ["Gắn các vùng sản xuất nông nghiệp, lâm nghiệp với ngư nghiệp", "Phát triển kinh tế ở vùng phía tây", "Hình thành các trung tâm công nghiệp", "Gắn các vùng sản xuất nông nghiệp, lâm nghiệp với ngư nghiệp"] },
+            { q: "Để tạo thế liên hoàn trong phát triển kinh tế ở Bắc Trung Bộ, biện pháp quan trọng nhất là", a: "Phát triển cơ sở hạ tầng giao thông vận tải", o: ["Gắn các vùng sản xuất nông nghiệp, lâm nghiệp với ngư nghiệp", "Phát triển kinh tế ở vùng phía tây", "Hình thành các trung tâm công nghiệp", "Phát triển cơ sở hạ tầng giao thông vận tải"] },
             { q: "Nam Trung Bộ có tiềm năng lớn để phát triển", a: "Điện gió và điện mặt trời", o: ["Điện gió và điện mặt trời", "Điện sinh khối và điện gió", "Điện nhiệt và điện sinh khối", "Điện mặt trời và địa nhiệt"] },
             { q: "Dầu khí của Đông Nam Bộ là nguyên liệu cho", a: "Sản xuất đạm", o: ["Sản xuất giấy", "Luyện kim màu", "Luyện kim đen", "Sản xuất đạm"] },
             { q: "Ngành công nghiệp mũi nhọn và quan trọng của Đông Nam Bộ hiện nay là", a: "Khai thác, chế biến dầu khí", o: ["Dệt may", "Sản xuất điện tử", "Sản xuất thực phẩm", "Khai thác, chế biến dầu khí"] },
@@ -84,7 +439,7 @@
             { q: "Nhà máy thủy điện nào sau đây không thuộc vùng Trung du và miền núi phía Bắc?", a: "Trị An", o: ["Lai Châu", "Thác Bà", "Trị An", "Sơn La"] },
             { q: "Tiềm năng lớn của Nam Trung Bộ về năng lượng tái tạo là", a: "Điện gió và mặt trời", o: ["Điện gió và mặt trời", "Điện sinh khối", "Sức nước", "Than đá"] },
             { q: "Trữ lượng than đá lớn là điều kiện quan trọng để Đồng bằng sông Hồng phát triển", a: "Sản xuất điện", o: ["Luyện kim đen", "Sản xuất xi măng", "Vật liệu xây dựng", "Sản xuất điện"] },
-            { q: "Bắc Trung Bộ không tiếp giáp với", a: "Tây Nguyên", o: ["Đồng bằng sông Hồng", "Lào", "Tây Nguyên", "Biển Đông"] }, // Sửa câu 45 cho đa dạng
+            { q: "Bắc Trung Bộ không tiếp giáp với", a: "Tây Nguyên", o: ["Đồng bằng sông Hồng", "Lào", "Tây Nguyên", "Biển Đông"] },
             { q: "Thuận lợi chủ yếu để Nam Trung Bộ phát triển dịch vụ hàng hải là", a: "Nằm gần tuyến đường biển quốc tế", o: ["Vùng biển rộng ít thiên tai", "Nằm gần tuyến đường biển quốc tế", "Nền kinh tế phát triển nhất", "Nhiệt độ nóng quanh năm"] },
             { q: "Khai thác dầu khí ở Đông Nam Bộ diễn ra chủ yếu ở", a: "Thềm lục địa", o: ["Ven biển", "Vùng núi", "Thềm lục địa", "Hải đảo"] },
             { q: "Hướng chủ yếu phát triển nuôi trồng thuỷ sản ở Đồng bằng sông Cửu Long là", a: "Đẩy mạnh chế biến, tăng cường xuất khẩu", o: ["Đẩy mạnh chế biến, tăng cường xuất khẩu", "Ứng dụng kĩ thuật mới", "Mở rộng diện tích", "Nâng cao sản lượng"] },
@@ -92,75 +447,395 @@
             { q: "Thuận lợi chủ yếu để phát triển cây cà phê ở Nam Trung Bộ là", a: "Đất đai màu mỡ, khí hậu có tính cận xích đạo", o: ["Nguồn nước phong phú", "Đất đai màu mỡ, khí hậu có tính cận xích đạo", "Có nhiều cao nguyên", "Khí hậu phân hóa theo độ cao"] }
         ];
 
-        const form = document.getElementById('quiz-form');
+        // ===================== DỮ LIỆU ĐÚNG SAI =====================
+        const tfQuestions = [
+            {
+                q: "Câu 1. Cho bảng số liệu diện tích rừng ở Nam Trung Bộ (đơn vị: nghìn ha):",
+                table: {
+                    headers: ["Loại rừng", "2010", "2015", "2020", "2021"],
+                    rows: [
+                        ["Rừng tự nhiên", "2653,9", "2246,0", "2179,8", "2104,1"],
+                        ["Rừng trồng", "220,5", "315,9", "382,2", "468,6"]
+                    ]
+                },
+                items: [
+                    { label: "a", text: "Diện tích rừng trồng tăng.", answer: true },
+                    { label: "b", text: "Trong cơ cấu rừng, diện tích rừng tự nhiên chiếm tỉ trọng cao hơn.", answer: true },
+                    { label: "c", text: "Diện tích rừng tự nhiên giảm chủ yếu do mở rộng diện tích trồng cây công nghiệp.", answer: false },
+                    { label: "d", text: "Biểu đồ miền là dạng biểu đồ thích hợp nhất thể hiện sự thay đổi cơ cấu diện tích rừng ở Nam Trung Bộ giai đoạn 2010–2021.", answer: true }
+                ]
+            },
+            {
+                q: "Câu 2. Cho bảng số liệu sản lượng thủy sản vùng Nam Trung Bộ (đơn vị: nghìn tấn):",
+                table: {
+                    headers: ["Loại", "2010", "2021", "2024"],
+                    rows: [
+                        ["Khai thác", "707,1", "1167,9", "1249,3"],
+                        ["Nuôi trồng", "80,8", "101,3", "165,9"]
+                    ]
+                },
+                items: [
+                    { label: "a", text: "Sản lượng thủy sản vùng Nam Trung Bộ tăng liên tục giai đoạn 2010–2024.", answer: true },
+                    { label: "b", text: "Sản lượng thủy sản khai thác tăng nhanh hơn sản lượng thủy sản nuôi trồng 1,7 lần.", answer: false },
+                    { label: "c", text: "Năm 2024 so với năm 2010, sản lượng nuôi trồng thủy sản của vùng tăng thêm 105%.", answer: true },
+                    { label: "d", text: "Biểu đồ cột là dạng biểu đồ thích hợp nhất thể hiện sản lượng thủy sản khai thác và nuôi trồng vùng Nam Trung Bộ, giai đoạn 2010–2024.", answer: true }
+                ]
+            },
+            {
+                q: "Câu 3. Cho bảng số liệu sản lượng thủy sản khai thác và cá biển khai thác (đơn vị: nghìn tấn):",
+                table: {
+                    headers: ["Loại", "2015", "2020", "2024"],
+                    rows: [
+                        ["Sản lượng thủy sản khai thác", "913,6", "1144,8", "1239,5"],
+                        ["Sản lượng cá biển khai thác", "734,1", "940,1", "1011,7"]
+                    ]
+                },
+                items: [
+                    { label: "a", text: "Sản lượng thủy sản khai thác và sản lượng cá biển khai thác có xu hướng tăng.", answer: true },
+                    { label: "b", text: "Năm 2024 so với năm 2015, sản lượng cá biển khai thác tăng nhanh hơn sản lượng thủy sản khai thác.", answer: true },
+                    { label: "c", text: "So với năm 2015, tỉ trọng sản lượng cá biển khai thác trong sản lượng thủy sản khai thác năm 2024 giảm.", answer: false },
+                    { label: "d", text: "Biểu đồ cột là dạng biểu đồ thích hợp nhất thể hiện tỉ trọng sản lượng cá biển khai thác trong sản lượng thủy sản khai thác giai đoạn 2015–2024.", answer: true }
+                ]
+            },
+            {
+                q: "Câu 4. Cho thông tin về rừng ở Đông Nam Bộ:",
+                context: "Rừng ở Đông Nam Bộ gồm rừng đặc dụng và rừng phòng hộ. Giải pháp quan trọng để giữ mực nước ngầm và nước ở các hồ chứa là bảo vệ và phát triển vốn rừng.",
+                items: [
+                    { label: "a", text: "Rừng ở Đông Nam Bộ phân ra rừng đặc dụng và rừng phòng hộ.", answer: true },
+                    { label: "b", text: "Rừng sản xuất là loại rừng trồng chủ yếu của tỉnh thành phố Hà Nội.", answer: false },
+                    { label: "c", text: "Rừng ngập mặn được trồng phù hợp với điều kiện khí hậu tại các địa phương ven biển.", answer: true },
+                    { label: "d", text: "Giải pháp quan trọng để giữ mực nước ngầm và nước ở các hồ chứa của Đông Nam Bộ là bảo vệ và phát triển vốn rừng.", answer: true }
+                ]
+            },
+            {
+                q: "Câu 5. Cho thông tin: Đồng bằng sông Cửu Long là vùng trọng điểm sản xuất lương thực, thực phẩm lớn nhất cả nước, phát triển nông nghiệp ứng dụng công nghệ cao, nông nghiệp xanh và hữu cơ.",
+                items: [
+                    { label: "a", text: "Diện tích, năng suất lúa, sản lượng lương thực, xuất khẩu lương thực và bình quân lương thực đầu người của đồng bằng sông Cửu Long dẫn đầu cả nước.", answer: true },
+                    { label: "b", text: "Đồng bằng sông Cửu Long đã và đang có các giải pháp phù hợp trong sử dụng và cải tạo tự nhiên, phát triển kinh tế mở cửa vào các loại sản phẩm có giá trị cao.", answer: false },
+                    { label: "c", text: "Áp dụng công nghệ sinh học, công nghệ môi trường để phát triển các mô hình kinh tế xanh, bền vững là hướng phát triển kinh tế của đồng bằng sông Cửu Long.", answer: true },
+                    { label: "d", text: "Đồng bằng sông Cửu Long là vùng có mật độ dân số lớn nhất cả nước nên nhu cầu lương thực, thực phẩm rất lớn.", answer: false }
+                ]
+            },
+            {
+                q: "Câu 6. Cho thông tin: Nông nghiệp vùng đồng bằng sông Cửu Long phát triển theo hướng sinh thái bền vững, nông nghiệp công nghệ cao, nông nghiệp xanh và hữu cơ.",
+                items: [
+                    { label: "a", text: "Đồng bằng sông Cửu Long là vùng trọng điểm về sản xuất lương thực và thực phẩm của nước ta.", answer: true },
+                    { label: "b", text: "Ngành nông nghiệp của đồng bằng sông Cửu Long đang đứng trước thách thức lớn của biến đổi khí hậu, gia tăng thiên tai, nhất là bão và sạt lở bờ biển.", answer: false },
+                    { label: "c", text: "Việc chuyển đổi cơ cấu cây trồng ở đồng bằng sông Cửu Long là biện pháp quan trọng để khắc phục tình trạng hạn hán, xâm nhập mặn, thiếu nước ngọt.", answer: true },
+                    { label: "d", text: "Ý nghĩa chủ yếu của việc phát triển nông nghiệp công nghệ cao, nông nghiệp hữu cơ ở đồng bằng sông Cửu Long là thích ứng với biến đổi khí hậu, tăng hiệu quả kinh tế.", answer: true }
+                ]
+            },
+            {
+                q: "Câu 7. Cho thông tin: Vùng Đông Nam Bộ có công nghiệp phát triển với cơ cấu ngành đa dạng, phát triển các ngành công nghiệp mới, sử dụng công nghệ cao.",
+                items: [
+                    { label: "a", text: "Vùng Đông Nam Bộ có nhiều ngành công nghiệp.", answer: true },
+                    { label: "b", text: "Công nghiệp của vùng chỉ chú trọng phát triển các ngành có thể khai thác tài nguyên và lao động.", answer: false },
+                    { label: "c", text: "Đông Nam Bộ có nhiều điều kiện thuận lợi để phát triển các ngành công nghiệp.", answer: true },
+                    { label: "d", text: "Đông Nam Bộ đạt giá trị sản xuất công nghiệp cao bậc nhất nước.", answer: true }
+                ]
+            },
+            {
+                q: "Câu 8. Cho thông tin: Tài nguyên khoáng sản nổi bật và có giá trị nhất của vùng Đông Nam Bộ là dầu mỏ và khí tự nhiên ở thềm lục địa thuộc các bể trầm tích Cửu Long, Nam Côn Sơn.",
+                items: [
+                    { label: "a", text: "Đông Nam Bộ dẫn đầu cả nước về sản lượng dầu khí.", answer: true },
+                    { label: "b", text: "Dầu khí ở Đông Nam Bộ phân bố chủ yếu ở vùng bờ biển thuộc đất liền.", answer: false },
+                    { label: "c", text: "Tài nguyên khoáng sản đa dạng, phong phú là nguyên nhân chính góp phần làm cơ cấu công nghiệp của Đông Nam Bộ đa dạng.", answer: true },
+                    { label: "d", text: "Khó khăn chủ yếu trong phát triển khai thác và chế biến khoáng sản ở Đông Nam Bộ là thiếu cơ sở năng lượng, vốn đầu tư.", answer: false }
+                ]
+            },
+            {
+                q: "Câu 9. Cho thông tin: Nông nghiệp vùng Đồng bằng sông Cửu Long phát triển theo hướng sinh thái bền vững. Các sản phẩm chủ yếu: thủy sản, lúa gạo, trái cây. Hiện nay phát triển theo hướng công nghệ cao, nông nghiệp xanh và hữu cơ.",
+                items: [
+                    { label: "a", text: "Đồng bằng sông Cửu Long là vùng trọng điểm về sản xuất lương thực và thực phẩm của nước ta.", answer: true },
+                    { label: "b", text: "Ngành nông nghiệp của Đồng bằng sông Cửu Long đang được phát triển dựa vào các tỉnh có điều kiện thuận lợi nhất, giá thành tiêu thụ cao.", answer: false },
+                    { label: "c", text: "Việc chuyển đổi cơ cấu cây trồng ở Đồng bằng sông Cửu Long là biện pháp quan trọng hàng đầu để khắc phục tình trạng hạn hán, xâm nhập mặn, thiếu nước ngọt.", answer: false },
+                    { label: "d", text: "Ý nghĩa chủ yếu của việc phát triển nông nghiệp công nghệ cao, nông nghiệp hữu cơ ở Đồng bằng sông Cửu Long là thích ứng với biến đổi khí hậu và tăng hiệu quả kinh tế.", answer: true }
+                ]
+            },
+            {
+                q: "Câu 10. Cho thông tin: Đồng bằng sông Cửu Long có mạng lưới sông ngòi, kênh rạch dày đặc, hệ thống sông Cửu Long với 2 nhánh lớn: sông Tiền, sông Hậu. Sông ngòi có vai trò quan trọng về thủy lợi, giao thông đường sông và phát triển du lịch.",
+                items: [
+                    { label: "a", text: "Bề mặt Đồng bằng sông Cửu Long có hệ thống sông ngòi, kênh rạch chằng chịt nên bị chia thành nhiều ô nhỏ.", answer: true },
+                    { label: "b", text: "Mạng lưới sông ngòi ở Đồng bằng sông Cửu Long còn có tiềm năng thủy điện lớn, cung cấp năng lượng cho vùng.", answer: false },
+                    { label: "c", text: "Nguồn nước ngọt có vai trò chủ yếu với Đồng bằng sông Cửu Long là thau chua, rửa mặn đất đai, phục vụ sinh hoạt.", answer: true },
+                    { label: "d", text: "Dọc theo các hệ thống sông của Đồng bằng sông Cửu Long hiện nay đang chịu ảnh hưởng nghiêm trọng của hiện tượng sạt lở.", answer: true }
+                ]
+            }
+        ];
 
-        function renderQuiz() {
-            questions.forEach((item, index) => {
-                const qDiv = document.createElement('div');
-                qDiv.className = "bg-white p-6 rounded-xl shadow-sm border border-gray-100";
-                
-                let optionsHtml = '';
+        // ===================== DỮ LIỆU TRẢ LỜI NGẮN =====================
+        const shortQuestions = [
+            {
+                q: "Năm 2024, sản lượng thủy sản khai thác của Đông Nam Bộ là 343 nghìn tấn, sản lượng nuôi trồng là 162 nghìn tấn. Hãy cho biết tỉ trọng sản lượng khai thác cao hơn tỉ trọng sản lượng thủy sản nuôi trồng bao nhiêu %? (làm tròn kết quả đến một chữ số thập phân)",
+                answer: 35.8
+            },
+            {
+                q: "Năm 2024, diện tích gieo trồng lúa của Đồng bằng sông Cửu Long là 3,86 triệu ha và sản lượng lúa là 24,6 triệu tấn. Hãy cho biết năng suất lúa của Đồng bằng sông Cửu Long là bao nhiêu tạ/ha (làm tròn kết quả đến hàng đơn vị)",
+                answer: 64
+            },
+            {
+                q: "Năm 2010 và năm 2024, sản lượng dầu thô khai thác ở vùng biển nước ta lần lượt là 14,7 triệu tấn và 8,1 triệu tấn. Hãy cho biết, sản lượng dầu thô khai thác ở vùng biển nước ta năm 2024 so với năm 2010 giảm bao nhiêu triệu tấn (làm tròn kết quả đến một chữ số thập phân)",
+                answer: 6.6
+            },
+            {
+                q: `Cho bảng số liệu nhiệt độ tại Thành phố Hồ Chí Minh (11 tháng, thiếu tháng 12):
+
+                <table class="q-table">
+                    <tr>
+                        <th>Tháng</th>
+                        <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th>
+                        <th>7</th><th>8</th><th>9</th><th>10</th><th>11</th>
+                    </tr>
+                    <tr>
+                        <td>Nhiệt độ (°C)</td>
+                        <td>25.8</td><td>26.7</td><td>27.9</td><td>28.9</td><td>28.3</td>
+                        <td>27.5</td><td>27.1</td><td>26.8</td><td>26.7</td><td>26.4</td><td>25.7</td>
+                    </tr>
+                </table>
+
+                Tính nhiệt độ trung bình năm của Thành phố Hồ Chí Minh (làm tròn đến 1 chữ số thập phân °C)`,
+                answer: 27.1
+            },
+            {
+                q: "Tính năng suất gieo trồng lúa cả năm ở Đồng bằng sông Cửu Long năm 2022, biết diện tích lúa cả năm là 3 802,6 nghìn ha và sản lượng lúa là 23 536,3 nghìn tấn (làm tròn đến số thập phân thứ nhất của tạ/ha)",
+                answer: 61.9
+            },
+            {
+                q: "Năm 2024, sản lượng lương thực có hạt của Đồng bằng sông Cửu Long là 24 681,1 nghìn tấn và dân số trung bình là 17 547,9 nghìn người. Tính sản lượng lương thực có hạt bình quân đầu người (kg/người, làm tròn đến hàng đơn vị)",
+                answer: 1407
+            },
+            {
+                q: "Năm 2010 và 2024, sản lượng khí tự nhiên khai thác ở vùng biển nước ta lần lượt là 9,4 tỉ m³ và 6,3 tỉ m³. Sản lượng khí tự nhiên năm 2024 so với 2010 giảm bao nhiêu tỉ m³? (làm tròn đến một chữ số thập phân)",
+                answer: 3.1
+            },
+            {
+                q: "Năm 2024, số dân thành thị cả nước là 39 007,3 nghìn người; vùng Nam Trung Bộ chiếm 14,3%. Tính số dân thành thị vùng Nam Trung Bộ (làm tròn đến hai chữ số thập phân của triệu người)",
+                answer: 5.58
+            },
+            {
+                q: "Năm 2024, doanh thu du lịch lữ hành của vùng Nam Trung Bộ là 11 670,7 tỷ đồng, chiếm 14,8% cả nước. Tính tổng doanh thu du lịch lữ hành cả nước (làm tròn đến một chữ số thập phân của nghìn tỷ đồng)",
+                answer: 78.9
+            },
+            {
+                q: `Cho bảng số liệu vận tải ở Đông Nam Bộ:
+
+                <table class="q-table">
+                    <tr>
+                        <th></th>
+                        <th>Năm 2022</th>
+                        <th>Năm 2024</th>
+                    </tr>
+                    <tr>
+                        <td>Vận chuyển (triệu tấn)</td>
+                        <td>395,2</td>
+                        <td>452,5</td>
+                    </tr>
+                    <tr>
+                        <td>Luân chuyển (triệu tấn.km)</td>
+                        <td>69181,9</td>
+                        <td>86365,5</td>
+                    </tr>
+                </table>
+
+                Cự li vận chuyển trung bình = Luân chuyển / Vận chuyển.  
+                Hỏi cự li năm 2024 tăng bao nhiêu km so với 2022? (làm tròn 1 chữ số thập phân)`,
+                answer: 15.8
+            }
+        ];
+
+        // ===================== RENDER TRẮC NGHIỆM =====================
+        function renderMC() {
+            const form = document.getElementById('mc-form');
+            mcQuestions.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'q-card';
+
+                let optsHtml = '';
                 item.o.forEach((opt, oIdx) => {
-                    const id = `q${index}_o${oIdx}`;
-                    optionsHtml += `
-                        <div class="mt-3">
-                            <input type="radio" name="question${index}" value="${opt}" id="${id}" class="option-input hidden">
-                            <label for="${id}" class="option-label block p-3 border rounded-lg cursor-pointer hover:bg-gray-50 border-gray-200">
-                                <span class="font-semibold mr-2">${String.fromCharCode(65 + oIdx)}.</span> ${opt}
-                            </label>
-                        </div>
-                    `;
+                    const id = `mc_${idx}_${oIdx}`;
+                    optsHtml += `
+                <div class="option-wrap">
+                    <input type="radio" name="mc_${idx}" value="${opt}" id="${id}" class="option-input">
+                    <label for="${id}" class="option-label">
+                        <strong>${String.fromCharCode(65 + oIdx)}.</strong> ${opt}
+                    </label>
+                </div>`;
                 });
 
-                qDiv.innerHTML = `
-                    <p class="text-lg font-bold text-gray-700 mb-2">Câu ${index + 1}: ${item.q}</p>
-                    <div class="options-container">${optionsHtml}</div>
-                    <div id="feedback-${index}" class="mt-3 hidden italic text-sm"></div>
-                `;
-                form.appendChild(qDiv);
+                card.innerHTML = `
+            <p class="q-text"><span class="q-num">Câu ${idx + 1}:</span> ${item.q}</p>
+            <div>${optsHtml}</div>
+            <div id="mc_fb_${idx}" style="display:none" class="feedback"></div>`;
+                form.appendChild(card);
             });
         }
 
-        function checkAnswers() {
-            let score = 0;
-            questions.forEach((item, index) => {
-                const selected = document.querySelector(`input[name="question${index}"]:checked`);
-                const feedback = document.getElementById(`feedback-${index}`);
-                feedback.classList.remove('hidden');
-                
-                const labels = document.querySelectorAll(`input[name="question${index}"] + label`);
-                
-                // Reset styles
-                labels.forEach(label => {
-                    label.classList.remove('bg-green-100', 'border-green-500', 'bg-red-100', 'border-red-500');
+        // ===================== RENDER ĐÚNG SAI =====================
+        function renderTF() {
+            const form = document.getElementById('tf-form');
+            tfQuestions.forEach((q, qIdx) => {
+                const card = document.createElement('div');
+                card.className = 'q-card';
+
+                let tableHtml = '';
+                if (q.table) {
+                    const hdrs = q.table.headers.map(h => `<th>${h}</th>`).join('');
+                    const rows = q.table.rows.map(r =>
+                        `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`
+                    ).join('');
+                    tableHtml = `<table class="q-table"><thead><tr>${hdrs}</tr></thead><tbody>${rows}</tbody></table>`;
+                }
+
+                let contextHtml = q.context ? `<p style="font-size:0.9rem;font-style:italic;color:var(--text-muted);margin-bottom:0.7rem;background:var(--surface2);padding:0.5rem 0.8rem;border-radius:5px;">${q.context}</p>` : '';
+
+                let itemsHtml = q.items.map((item, iIdx) => `
+            <div class="sub-item">
+                <p class="sub-item-text"><strong>${item.label})</strong> ${item.text}</p>
+                <div class="tf-options">
+                    <input type="radio" name="tf_${qIdx}_${iIdx}" value="true" id="tf_${qIdx}_${iIdx}_T" class="tf-input">
+                    <label for="tf_${qIdx}_${iIdx}_T" class="tf-label">✓ Đúng</label>
+                    <input type="radio" name="tf_${qIdx}_${iIdx}" value="false" id="tf_${qIdx}_${iIdx}_F" class="tf-input">
+                    <label for="tf_${qIdx}_${iIdx}_F" class="tf-label">✗ Sai</label>
+                </div>
+                <div id="tf_fb_${qIdx}_${iIdx}" style="display:none" class="feedback"></div>
+            </div>`).join('');
+
+                card.innerHTML = `
+            <p class="q-text">${q.q}</p>
+            ${tableHtml}
+            ${contextHtml}
+            ${itemsHtml}`;
+                form.appendChild(card);
+            });
+        }
+
+        // ===================== RENDER TRẢ LỜI NGẮN =====================
+        function renderShort() {
+            const form = document.getElementById('short-form');
+
+            shortQuestions.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'q-card';
+
+                card.innerHTML = `
+            <p class="q-text"><span class="q-num">Câu ${idx + 1}:</span> ${item.q}</p>
+            <input type="number" step="any" id="short_${idx}" 
+                style="width:100%;padding:0.6rem;border:1.5px solid var(--border);border-radius:6px;">
+            <div id="short_fb_${idx}" class="feedback" style="display:none"></div>
+        `;
+
+                form.appendChild(card);
+            });
+        }
+
+        // ===================== CHẤM BÀI =====================
+        function checkAll() {
+            let mcScore = 0;
+            let tfScore = 0;
+
+            // Chấm trắc nghiệm
+            mcQuestions.forEach((item, idx) => {
+                const selected = document.querySelector(`input[name="mc_${idx}"]:checked`);
+                const fb = document.getElementById(`mc_fb_${idx}`);
+                fb.style.display = 'block';
+
+                // Reset all labels
+                document.querySelectorAll(`input[name="mc_${idx}"] + label`).forEach(lbl => {
+                    lbl.classList.remove('correct-ans', 'wrong-ans');
                 });
 
                 if (selected) {
                     if (selected.value === item.a) {
-                        score++;
-                        feedback.innerHTML = `<span class="text-green-600">Chính xác!</span>`;
+                        mcScore++;
+                        fb.className = 'feedback correct';
+                        fb.textContent = '✓ Chính xác!';
                     } else {
-                        feedback.innerHTML = `<span class="text-red-600">Chưa đúng. Đáp án là: ${item.a}</span>`;
+                        fb.className = 'feedback wrong';
+                        fb.textContent = `✗ Chưa đúng. Đáp án: ${item.a}`;
+                        selected.nextElementSibling.classList.add('wrong-ans');
                     }
                 } else {
-                    feedback.innerHTML = `<span class="text-orange-600">Bạn chưa chọn câu trả lời này. Đáp án là: ${item.a}</span>`;
+                    fb.className = 'feedback skipped';
+                    fb.textContent = `— Chưa chọn. Đáp án: ${item.a}`;
                 }
 
                 // Highlight correct answer
-                labels.forEach(label => {
-                    if (label.innerText.includes(item.a)) {
-                        label.classList.add('bg-green-100', 'border-green-500');
-                    }
+                document.querySelectorAll(`input[name="mc_${idx}"]`).forEach(inp => {
+                    if (inp.value === item.a) inp.nextElementSibling.classList.add('correct-ans');
                 });
             });
 
-            document.getElementById('score-summary').classList.remove('hidden');
-            document.getElementById('final-score').innerText = score;
-            document.getElementById('submit-btn').innerText = "Cập nhật kết quả";
+            // Chấm đúng sai
+            tfQuestions.forEach((q, qIdx) => {
+                q.items.forEach((item, iIdx) => {
+                    const selected = document.querySelector(`input[name="tf_${qIdx}_${iIdx}"]:checked`);
+                    const fb = document.getElementById(`tf_fb_${qIdx}_${iIdx}`);
+                    fb.style.display = 'block';
+
+                    const trueLabel = document.querySelector(`label[for="tf_${qIdx}_${iIdx}_T"]`);
+                    const falseLabel = document.querySelector(`label[for="tf_${qIdx}_${iIdx}_F"]`);
+                    trueLabel.classList.remove('correct-ans', 'wrong-ans');
+                    falseLabel.classList.remove('correct-ans', 'wrong-ans');
+
+                    const correctLabel = item.answer ? trueLabel : falseLabel;
+                    correctLabel.classList.add('correct-ans');
+
+                    if (selected) {
+                        const userAns = selected.value === 'true';
+                        if (userAns === item.answer) {
+                            tfScore++;
+                            fb.className = 'feedback correct';
+                            fb.textContent = '✓ Chính xác!';
+                        } else {
+                            fb.className = 'feedback wrong';
+                            fb.textContent = `✗ Sai. Đáp án: ${item.answer ? 'Đúng' : 'Sai'}`;
+                            const wrongLabel = item.answer ? falseLabel : trueLabel;
+                            wrongLabel.classList.add('wrong-ans');
+                        }
+                    } else {
+                        fb.className = 'feedback skipped';
+                        fb.textContent = `— Chưa chọn. Đáp án: ${item.answer ? 'Đúng' : 'Sai'}`;
+                    }
+                });
+            });
+            // Chấm trả lời ngắn
+            let shortScore = 0;
+
+            shortQuestions.forEach((item, idx) => {
+                const input = document.getElementById(`short_${idx}`);
+                const fb = document.getElementById(`short_fb_${idx}`);
+                fb.style.display = 'block';
+
+                const userVal = parseFloat(input.value.replace(',', '.'));
+
+                if (!isNaN(userVal)) {
+                    // cho phép sai số nhỏ (0.1)
+                    if (Math.abs(userVal - item.answer) <= 0.1) {
+                        shortScore++;
+                        fb.className = 'feedback correct';
+                        fb.textContent = '✓ Chính xác!';
+                    } else {
+                        fb.className = 'feedback wrong';
+                        fb.textContent = `✗ Sai. Đáp án: ${item.answer}`;
+                    }
+                } else {
+                    fb.className = 'feedback skipped';
+                    fb.textContent = `— Chưa nhập. Đáp án: ${item.answer}`;
+                }
+            });
+
+            document.getElementById('final-score-mc').textContent = mcScore;
+            document.getElementById('final-score-tf').textContent = tfScore;
+            document.getElementById('final-score-short').textContent = shortScore;
+            document.getElementById('score-summary').style.display = 'block';
+            document.getElementById('submit-btn').textContent = '↻ Cập nhật kết quả';
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        window.onload = renderQuiz;
+        renderMC();
+        renderTF();
+        renderShort();
     </script>
 </body>
+
 </html>
